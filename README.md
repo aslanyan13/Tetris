@@ -1,2 +1,2 @@
-# tetris
-Classic Tetris game made with SFML library
+# Tetris
+**Classic Tetris game made with SFML library**
