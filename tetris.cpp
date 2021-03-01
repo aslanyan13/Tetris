@@ -25,50 +25,50 @@ const int BLOCK_HEIGHT = 15;
 
 char currentSym = '#';
 
-const char tetriminos[7][4][5] = {
-    // I Tetrimino
+const char tetrominos[7][4][5] = {
+    // I Tetromino
     {
         ".#..",
         ".#..",
         ".#..",
         ".#.."
     },
-    // O Tetrimino
+    // O Tetromino
     {
         "....",
         ".##.",
         ".##.",
         "...."
     },
-    // J Tetrimino
+    // J Tetromino
     {
         ".#..",
         ".#..",
         "##..",
         "...."
     },
-    // L Tetrimino
+    // L Tetromino
     {
         ".#..",
         ".#..",
         ".##.",
         "...."
     },
-    // T Tetrimino
+    // T Tetromino
     {
         "....",
         "###.",
         ".#..",
         "...."
     },
-    // Z tetrimino
+    // Z tetromino
     {
         "##..",
         ".##.",
         "....",
         "...."
     },
-    // S Tetrimino
+    // S Tetromino
     {
         ".##.",
         "##..",
@@ -78,25 +78,25 @@ const char tetriminos[7][4][5] = {
 };
 
 // Figure copying
-void tetriminoCopy (char tetrimino1[4][5], const char tetrimino2[4][5])
+void tetrominoCopy (char tetromino1[4][5], const char tetromino2[4][5])
 {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 5; j++)
         {
-            if (tetrimino2[i][j] == '#')
-                tetrimino1[i][j] = currentSym;
+            if (tetromino2[i][j] == '#')
+                tetromino1[i][j] = currentSym;
             else
-                tetrimino1[i][j] = tetrimino2[i][j];
+                tetromino1[i][j] = tetromino2[i][j];
         }
 }
 // Figure drawing in map
-void tetriminoDraw (int x, int y, char tetrimino[4][5], char map[MAP_HEIGHT][MAP_WIDTH])
+void tetrominoDraw (int x, int y, char tetromino[4][5], char map[MAP_HEIGHT][MAP_WIDTH])
 {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
         {
-            if (map[y + i][x + j] == '.' && tetrimino[i][j] == '.') map[y + i][x + j]  = '.';
-            else if (map[y + i][x + j] == '.' && tetrimino[i][j] == currentSym) map[y + i][x + j]  = currentSym;
+            if (map[y + i][x + j] == '.' && tetromino[i][j] == '.') map[y + i][x + j]  = '.';
+            else if (map[y + i][x + j] == '.' && tetromino[i][j] == currentSym) map[y + i][x + j]  = currentSym;
         }
 }
 // Line checking
@@ -125,14 +125,14 @@ void checkLines (char map[MAP_HEIGHT][MAP_WIDTH])
 }
 
 // Checking if figure can fitt
-bool isFitt (int x, int y, char tetrimino[4][5], char map[MAP_HEIGHT][MAP_WIDTH]) {
+bool isFitt (int x, int y, char tetromino[4][5], char map[MAP_HEIGHT][MAP_WIDTH]) {
 
     int leftEdge = -1, rightEdge = -1, bottomEdge = -1;
     for (int i = 0; i < 4; i++)
     {
         for (int j = 0; j < 4; j++)
         {
-            if (tetrimino[j][i] == currentSym) leftEdge = i;
+            if (tetromino[j][i] == currentSym) leftEdge = i;
         }
         if (leftEdge != -1) break;
     }
@@ -140,7 +140,7 @@ bool isFitt (int x, int y, char tetrimino[4][5], char map[MAP_HEIGHT][MAP_WIDTH]
     {
         for (int j = 0; j < 4; j++)
         {
-            if (tetrimino[j][i] == currentSym) rightEdge = i;
+            if (tetromino[j][i] == currentSym) rightEdge = i;
         }
         if (rightEdge != -1) break;
     }
@@ -148,7 +148,7 @@ bool isFitt (int x, int y, char tetrimino[4][5], char map[MAP_HEIGHT][MAP_WIDTH]
     {
         for (int j = 0; j < 4; j++)
         {
-            if (tetrimino[i][j] == currentSym) bottomEdge = i;
+            if (tetromino[i][j] == currentSym) bottomEdge = i;
         }
         if (bottomEdge != -1) break;
     }
@@ -161,7 +161,7 @@ bool isFitt (int x, int y, char tetrimino[4][5], char map[MAP_HEIGHT][MAP_WIDTH]
     {
         for (int j = 0; j < 4; j++)
         {
-            if (map[y + i][x + j] != '.' && tetrimino[i][j] == currentSym) return false;
+            if (map[y + i][x + j] != '.' && tetromino[i][j] == currentSym) return false;
         }
     }
 
@@ -169,7 +169,7 @@ bool isFitt (int x, int y, char tetrimino[4][5], char map[MAP_HEIGHT][MAP_WIDTH]
 }
 
 // Figure rotating
-void tetriminoRotate (char tetrimino[4][5], int tetrNum) {
+void tetrominoRotate (char tetromino[4][5], int tetrNum) {
     int rotationPlaceN = 3;
 
     if (tetrNum == 0 || tetrNum == 1) {
@@ -179,14 +179,14 @@ void tetriminoRotate (char tetrimino[4][5], int tetrNum) {
     //transpose
     for(int r = 0; r < rotationPlaceN; r++) {
       for(int c = r; c < rotationPlaceN; c++) {
-        swap(tetrimino[r][c], tetrimino[c][r]);
+        swap(tetromino[r][c], tetromino[c][r]);
       }
     }
 
     //reverse elements on row order
     for(int r = 0; r < rotationPlaceN; r++) {
         for(int c =0; c < rotationPlaceN/2; c++) {
-          swap(tetrimino[r][c], tetrimino[r][rotationPlaceN-c-1]);
+          swap(tetromino[r][c], tetromino[r][rotationPlaceN-c-1]);
         }
     }
 }
@@ -207,7 +207,7 @@ int main()
     RenderWindow window (VideoMode(MAP_WIDTH * BLOCK_WIDTH, MAP_HEIGHT * BLOCK_WIDTH), "Tetris");
 
     char map[MAP_HEIGHT][MAP_WIDTH];
-    char currentTetrimino[4][5];
+    char currentTetromino[4][5];
     float tetrX = 10, tetrY = 0;
     int tetrNum = rand() % 7;
 
@@ -216,7 +216,7 @@ int main()
         for (int j = 0; j < MAP_WIDTH; j++)
             map[i][j] = '.';
 
-    tetriminoCopy(currentTetrimino, tetriminos[tetrNum]);
+    tetrominoCopy(currentTetromino, tetrominos[tetrNum]);
 
     unsigned int timer = 0;
     while (window.isOpen())
@@ -230,22 +230,22 @@ int main()
                 window.close();
         }
 
-        // tetriminoClear(tetrX, ceill(tetrY), currentTetrimino, map);
+        // tetrominoClear(tetrX, ceill(tetrY), currentTetromino, map);
 
         char temp[4][5];
-        tetriminoCopy(temp, currentTetrimino);
+        tetrominoCopy(temp, currentTetromino);
 
-        tetriminoRotate(temp, tetrNum);
+        tetrominoRotate(temp, tetrNum);
 
-        if (fmod(timer, 3) == 0)
+        if (fmod(timer, 2) == 0)
         {
             if (isFitt(tetrX, ceill(tetrY), temp, map) && Keyboard::isKeyPressed(Keyboard::Space))
-                tetriminoRotate(currentTetrimino, tetrNum);
-            if (isFitt(tetrX - 1, ceill(tetrY), currentTetrimino, map) && Keyboard::isKeyPressed(Keyboard::Left))
+                tetrominoRotate(currentTetromino, tetrNum);
+            if (isFitt(tetrX - 1, ceill(tetrY), currentTetromino, map) && Keyboard::isKeyPressed(Keyboard::Left))
                 tetrX--;
-            if (isFitt(tetrX + 1, ceill(tetrY), currentTetrimino, map) && Keyboard::isKeyPressed(Keyboard::Right))
+            if (isFitt(tetrX + 1, ceill(tetrY), currentTetromino, map) && Keyboard::isKeyPressed(Keyboard::Right))
                 tetrX++;
-            if (isFitt(tetrX, ceill(tetrY + 0.2), currentTetrimino, map) && Keyboard::isKeyPressed(Keyboard::Down))
+            if (isFitt(tetrX, ceill(tetrY + 0.2), currentTetromino, map) && Keyboard::isKeyPressed(Keyboard::Down))
                 tetrY += 0.2;
         }
 
@@ -276,7 +276,7 @@ int main()
             }
         }
 
-        // Current tetrimino figure drawing
+        // Current tetromino figure drawing
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 4; j++)
@@ -288,25 +288,25 @@ int main()
                 block.setPosition(tetrX * BLOCK_WIDTH + j * BLOCK_WIDTH, (tetrY * BLOCK_HEIGHT) + i * BLOCK_HEIGHT);
                 block.setFillColor(colors[currentSym]);
 
-                if (currentTetrimino[i][j] != '.') window.draw(block);
+                if (currentTetromino[i][j] != '.') window.draw(block);
             }
         }
 
         cout << tetrY << endl;
 
-        if (isFitt(tetrX, ceill(tetrY + 0.1), currentTetrimino, map)) {
+        if (isFitt(tetrX, ceill(tetrY + 0.1), currentTetromino, map)) {
             tetrY += 0.1;
         }
         else {
             // New figure creating
-            tetriminoDraw(tetrX, ceill(tetrY), currentTetrimino, map);
+            tetrominoDraw(tetrX, ceill(tetrY), currentTetromino, map);
             tetrX = 10, tetrY = 0;
             tetrNum = rand() % 7;
             currentSym = symbols[rand() % symbols.length()];
-            tetriminoCopy(currentTetrimino, tetriminos[tetrNum]);
+            tetrominoCopy(currentTetromino, tetrominos[tetrNum]);
 
             // Game over test
-            if (!isFitt(tetrX, tetrY, currentTetrimino, map)) break;
+            if (!isFitt(tetrX, tetrY, currentTetromino, map)) break;
         }
 
         window.display();
