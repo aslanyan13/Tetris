@@ -1,9 +1,10 @@
 ///////////////////////
 //  Project: Tetris  //
 //  Date:  1.3.2021  //
-//  By: H. Aslanyan  //
+//  By: Nick Redwill //
 ///////////////////////
 
+// C++ Standart Header Files
 #include <iostream>
 #include <time.h>
 #include <math.h>
@@ -12,19 +13,24 @@
 #include <chrono>
 #include <vector>
 
+// SFML Header Files
 #include <SFML/Graphics.hpp>
 
 using namespace std;
 using namespace sf;
 
+// Map size constants
 const int MAP_WIDTH = 20;
 const int MAP_HEIGHT = 30;
 
+// Block size constants
 const int BLOCK_WIDTH = 15;
 const int BLOCK_HEIGHT = 15;
 
+// Current block symbol (for color)
 char currentSym = '#';
 
+// Tetrominos array
 const char tetrominos[7][4][5] = {
     // I Tetromino
     {
@@ -205,10 +211,16 @@ int main()
     colors['&'] = Color::Cyan;
 
     RenderWindow window (VideoMode(MAP_WIDTH * BLOCK_WIDTH, MAP_HEIGHT * BLOCK_WIDTH), "Tetris");
+    window.setFramerateLimit(30); // Game FPS limit to 30
 
     char map[MAP_HEIGHT][MAP_WIDTH];
     char currentTetromino[4][5];
+
+    // Figure parameters
     float tetrX = 10, tetrY = 0;
+    float tetrDX = 0;
+    float tetrSpeed = 0.2;
+    int tetrA = 0;
     int tetrNum = rand() % 7;
 
     // Map generating
@@ -218,7 +230,7 @@ int main()
 
     tetrominoCopy(currentTetromino, tetrominos[tetrNum]);
 
-    unsigned int timer = 0;
+    // Game Loop
     while (window.isOpen())
     {
         window.clear();
@@ -230,34 +242,45 @@ int main()
                 window.close();
         }
 
-        // tetrominoClear(tetrX, ceill(tetrY), currentTetromino, map);
-
-        char temp[4][5];
-        tetrominoCopy(temp, currentTetromino);
-
-        tetrominoRotate(temp, tetrNum);
-
-        if (fmod(timer, 2) == 0)
+        // If Figure angle higher or equal to 90, then rotate
+        if (tetrA >= 90)
         {
-            if (isFitt(tetrX, ceill(tetrY), temp, map) && Keyboard::isKeyPressed(Keyboard::Space))
+            char temp[4][5];
+            tetrominoCopy(temp, currentTetromino);
+            tetrominoRotate(temp, tetrNum);
+
+            if (isFitt(tetrX, ceill(tetrY), temp, map))
                 tetrominoRotate(currentTetromino, tetrNum);
-            if (isFitt(tetrX - 1, ceill(tetrY), currentTetromino, map) && Keyboard::isKeyPressed(Keyboard::Left))
-                tetrX--;
-            if (isFitt(tetrX + 1, ceill(tetrY), currentTetromino, map) && Keyboard::isKeyPressed(Keyboard::Right))
-                tetrX++;
-            if (isFitt(tetrX, ceill(tetrY + 0.2), currentTetromino, map) && Keyboard::isKeyPressed(Keyboard::Down))
-                tetrY += 0.2;
+            tetrA = 0;
         }
 
-        system("clear");
+        // Figure falling Speed Up/Down
+        if (Keyboard::isKeyPressed(Keyboard::Add)) tetrSpeed += 0.01;
+        if (Keyboard::isKeyPressed(Keyboard::Subtract)) tetrSpeed -= 0.01;
 
-        for (int i = 0; i < MAP_HEIGHT; i++)
+        // Figure falling speed incrise
+        if (Keyboard::isKeyPressed(Keyboard::Space))
+            tetrA += 25;
+
+        // Left/Right moving button press detecting
+        if (Keyboard::isKeyPressed(Keyboard::Left))
+            tetrDX -= 0.5;
+        if (Keyboard::isKeyPressed(Keyboard::Right))
+            tetrDX += 0.5;
+
+        if (isFitt(tetrX, ceill(tetrY + tetrSpeed * 2.5), currentTetromino, map) && Keyboard::isKeyPressed(Keyboard::Down))
+            tetrY += tetrSpeed * 2.5;
+
+        // Figure Moving Left/Right
+        if (tetrDX <= -1)
         {
-            for (int j = 0; j < MAP_WIDTH; j++)
-            {
-                cout << map[i][j];
-            }
-            cout << endl;
+            if (isFitt(tetrX - 1, ceill(tetrY), currentTetromino, map)) tetrX += int(tetrDX);
+            tetrDX = 0;
+        }
+        if (tetrDX >= 1)
+        {
+            if (isFitt(tetrX + 1, ceill(tetrY), currentTetromino, map)) tetrX += int(tetrDX);
+            tetrDX = 0;
         }
 
         // Map drawing
@@ -292,10 +315,10 @@ int main()
             }
         }
 
-        cout << tetrY << endl;
+        cout << "Y: " << tetrY << " Speed: " << tetrSpeed << endl;
 
-        if (isFitt(tetrX, ceill(tetrY + 0.1), currentTetromino, map)) {
-            tetrY += 0.1;
+        if (isFitt(tetrX, ceill(tetrY + tetrSpeed), currentTetromino, map)) {
+            tetrY += tetrSpeed;
         }
         else {
             // New figure creating
@@ -310,9 +333,7 @@ int main()
         }
 
         window.display();
-
         checkLines(map); // Lines checking
-        timer++;         // Game timer
     }
 
     return 0;
